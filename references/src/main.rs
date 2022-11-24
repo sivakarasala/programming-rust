@@ -1,5 +1,23 @@
 use std::collections::HashMap;
 
+// A reference lets you access a value without affecting its
+// ownership. Two types of references:
+// 1. Shared Reference lets you read but not modify its referent
+// 2. Mutable reference lets you both read and modify the value.
+// Kind of exclusive to each other.
+
+// Lifetimes
+// A lifetime is some stretch of your program for which a reference
+// could be safe to use: a statement, an expression, the scope of 
+// some variable, or the like.
+
+// A variable's lifetime must contain or enclose that of the reference
+// borrowed from it.
+
+// If a reference is stored in a variable, then the reference's type 
+// must be good for the entire lifetime of the variable, from its
+// initialization until its last use.
+
 type Table = HashMap<String, Vec<String>>;
 
 fn show(table: &Table) {
@@ -86,4 +104,58 @@ fn main() {
     
     // assert!(rx == rrx);
     assert!(rx == *rrx);
+
+    {
+        struct S<'a, 'b> {
+            x: &'a i32,
+            y: &'b i32
+        }
+
+        let x = 10;
+        let r;
+        {
+            let y = 20;
+            {
+                let s = S { x: &x, y: &y };
+                r = s.x;
+            }
+        }
+        println!("{}", r);
+    }
+
+    {
+        let mut wave = Vec::new();
+        let head = vec![0.0, 1.0];
+        let tail = [0.0, -1.0];
+
+        extend(&mut wave, &head);
+        extend(&mut wave, &tail);
+
+        assert_eq!(wave, vec![0.0, 1.0, 0.0, -1.0]);
+
+        // Shared access is read-only access.
+        // Mutable access is exclusive access.
+        //extend(&mut wave, &wave);
+
+        // A data race is possible only when some value is both
+        // mutable and shared between threads -- which is exactly
+        // what Rust's reference rules eliminate.
+
+        // A concurrent rust program that avoids unsafe code is
+        // free of data races by construction.
+        
+    }
+}
+
+static mut STASH: &i32 = &128;
+fn f(p: &'static i32) { 
+    unsafe {
+        STASH = p;
+    } 
+}
+
+fn extend(vec: &mut Vec<f64>, slice: &[f64]) {
+    for elt in slice {
+        vec.push(*elt);
+    }
 }
