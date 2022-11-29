@@ -54,6 +54,25 @@ fn main() {
     assert!(q.is_empty());
     q.push('☉');
     assert!(!q.is_empty());
+
+    let mut q = Queue { older: Vec::new(), younger: Vec::new() };
+
+    q.push('P');
+    q.push('D');
+    assert_eq!(q.pop(), Some('P'));
+    q.push('X');
+
+    let (older, younger) = q.split();
+    assert_eq!(older, vec!['D']);
+    assert_eq!(younger, vec!['X']);
+
+    let mut bq = Box::new(Queue::new());
+
+    bq.push('D');
+
+    let mut q = Queue::new();
+
+    q.push('*');
 }
 
 struct Broom {
@@ -85,6 +104,13 @@ pub struct Queue {
 }
 
 impl Queue {
+    // Type-Associated function
+    pub fn new() -> Queue {
+        Queue { older: Vec::new(), younger: Vec::new() }
+    }
+
+
+    // methods
     pub fn push(&mut self, c: char) {
         self.younger.push(c);
     }
@@ -106,4 +132,21 @@ impl Queue {
     pub fn is_empty(&self) -> bool {
         self.older.is_empty() && self.younger.is_empty()
     }
+
+    pub fn split(self) -> (Vec<char>, Vec<char>) {
+        (self.older, self.younger)
+    }
+}
+
+pub struct Vector2 {
+    x: f32,
+    y: f32,
+}
+
+impl Vector2 {
+    const ZERO: Vector2 = Vector2 { x: 0.0, y: 0.0 };
+    const UNIT: Vector2 = Vector2 { x: 1.0, y: 0.0 };
+
+    const NAME: &'static str = "Vector2";
+    const ID: u32 = 18;
 }
