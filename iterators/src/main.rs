@@ -86,4 +86,55 @@ fn main() {
     assert_eq!(it.next(), Some("Liebestraume No. 3".to_string()));
     assert_eq!(it.next(), Some("Lucy in the Sky with Diamonds".to_string()));
     assert_eq!(it.next(), None);
+
+    let text = "  ponies  \n   giraffes\niguanas  \nsquid".to_string();
+    let v: Vec<&str> = text.lines()
+        .map(str::trim)
+        .collect();
+    assert_eq!(v, ["ponies", "giraffes", "iguanas", "squid"]);
+
+    let text = "  ponies  \n   giraffes\niguanas  \nsquid".to_string();
+    let v: Vec<&str> = text.lines()
+        .map(str::trim)
+        .filter(|s| *s != "iguanas")
+        .collect();
+    assert_eq!(v, ["ponies", "giraffes", "squid"]);
+
+    use std::str::FromStr;
+
+    let text = "1\nfrond .25  289\n3.1415 estuary\n";
+    for number in text
+        .split_whitespace()
+        .filter_map(|w| f64::from_str(w).ok())
+    {
+        println!("{:4.2}", number.sqrt());
+    }
+
+    use std::collections::HashMap;
+
+    let mut major_cities = HashMap::new();
+    major_cities.insert("Japan", vec!["Tokyo", "Kyoto"]);
+    major_cities.insert("The United States", vec!["Portland", "Nashville"]);
+    major_cities.insert("Brazil", vec!["São Paulo", "Brasília"]);
+    major_cities.insert("Kenya", vec!["Nairobi", "Mombasa"]);
+    major_cities.insert("The Netherlands", vec!["Amsterdam", "Utrecht"]);
+
+    let countries = ["Japan", "Brazil", "Kenya"];
+
+    for &city in countries.iter().flat_map(|country| &major_cities[country]) {
+        println!("{}", city);
+    }
+
+    // A table mapping cities to their parks: each value is a vector.
+    use std::collections::BTreeMap;
+    let mut parks = BTreeMap::new();
+    parks.insert("Portland",  vec!["Mt. Tabor Park", "Forest Park"]);
+    parks.insert("Kyoto",     vec!["Tadasu-no-Mori Forest", "Maruyama Koen"]);
+    parks.insert("Nashville", vec!["Percy Warner Park", "Dragon Park"]);
+
+    let all_parks: Vec<_> = parks.values().flatten().cloned().collect();
+
+    assert_eq!(all_parks,
+        vec!["Tadasu-no-Mori Forest", "Maruyama Koen", "Percy Warner Park",
+             "Dragon Park", "Mt. Tabor Park", "Forest Park"]);
 }
